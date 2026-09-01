@@ -2,7 +2,7 @@
  
 A production-grade, containerised fraud-scoring API built on FastAPI, scikit-learn, and
 clean architecture principles. This project was developed as the capstone for
-**SDAIA Academy's AI Engineer Track**.
+**SDAIA Academy's**.
  
 **Author:** Shatha Marzuq
  
