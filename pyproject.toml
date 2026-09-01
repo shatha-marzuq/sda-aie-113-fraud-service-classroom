@@ -8,6 +8,10 @@ dependencies = [
     "scikit-learn",
     "joblib",
     "pydantic>=2",
+    "fastapi",
+    "uvicorn",
+    "pydantic-settings",
+    "structlog",
 ]
 
 [build-system]
