@@ -1,11 +1,3 @@
-"""
-src/fraud_service/api/schemas.py
-
-عقد النقل (wire contract). extra="forbid" يخلي أي حقل غريب يرجع 422
-بصوت عالي، بدل ما يُتجاهل بصمت (قصة amount_sr المذكورة بالسلايد:
-عميل أرسل amount_sr بدل amount_sar لمدة 3 أسابيع والنموذج يسجّل درجة
-افتراضية بصمت — لو كان extra="forbid" مفعّل، كانت طلعت 422 من أول طلب).
-"""
 
 from datetime import datetime
 
@@ -24,8 +16,7 @@ class PredictRequest(BaseModel):
     timestamp: datetime
 
     def to_domain(self) -> Transaction:
-        """الجسر الوحيد بين شكل الشبكة (wire format) والكيان بالـ domain.
-        السكيمات ما تتسرب للداخل أبداً — التحويل يصير هنا فقط، سطرين."""
+     
         return Transaction(
             transaction_id=self.transaction_id,
             amount_sar=self.amount_sar,
