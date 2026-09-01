@@ -3,6 +3,7 @@ import math
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 
 class Decision(str, Enum):
@@ -24,7 +25,7 @@ class FeatureVector:
     hour_of_day: int
     is_night: int
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "amount_log": self.amount_log,
             "channel": self.channel,
@@ -34,7 +35,7 @@ class FeatureVector:
         }
 
     @property
-    def values(self) -> dict:
+    def values(self) -> dict[str, Any]:
         return self.to_dict()
 
 
@@ -67,7 +68,7 @@ class Transaction:
             is_night=is_night,
         )
 
-    def model_dump(self) -> dict:
+    def model_dump(self) -> dict[str, Any]:
         return dataclasses.asdict(self)
 
 

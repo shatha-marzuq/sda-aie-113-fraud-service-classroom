@@ -61,3 +61,7 @@ layers = [
     "fraud_service.service",
     "fraud_service.domain",
 ]
+
+[[tool.mypy.overrides]]
+module = ["joblib.*", "pandas.*"]
+ignore_missing_imports = true

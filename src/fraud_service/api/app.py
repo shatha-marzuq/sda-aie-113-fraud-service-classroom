@@ -1,10 +1,12 @@
 import math
 import time
 import uuid
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -24,14 +26,12 @@ def _warmup_features() -> FeatureVector:
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = Settings()
     configure_logging(settings.log_level)
 
     t0 = time.perf_counter()
-    # ملاحظة: السلايد يستخدم SklearnModel.load(...) — عندك __init__ يسوي نفس
-    # الشغلة مباشرة، فما نحتاج classmethod منفصل. لو حبيت تطابق الاسم بالضبط
-    # بعدين، تقدر تضيف @classmethod باسم load() يستدعي __init__ داخلياً.
+
     model = SklearnModel(str(settings.model_path))
     model.predict_proba(_warmup_features())  # warm-up
 
@@ -47,7 +47,9 @@ async def lifespan(app: FastAPI):
     log.info("shutdown_complete")
 
 
-async def trace_and_timing_middleware(request: Request, call_next):
+async def trace_and_timing_middleware(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
     trace_id = str(uuid.uuid4())
     request.state.trace_id = trace_id
     t0 = time.perf_counter()
@@ -59,7 +61,7 @@ async def trace_and_timing_middleware(request: Request, call_next):
     return response
 
 
-def _json_safe(value):
+def _json_safe(value: Any) -> Any:
     """422 error bodies echo back the raw input value. If that value is a
     non-finite float (inf/-inf/nan), strict JSON serialization crashes with
     a 500 instead of returning the 422 the client actually earned."""
@@ -74,7 +76,9 @@ def create_app() -> FastAPI:
     app.include_router(router, prefix="/v1")
 
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
         errors = exc.errors()
         for error in errors:
             if "input" in error:
@@ -85,9 +89,8 @@ def create_app() -> FastAPI:
         )
 
     @app.exception_handler(Exception)
-    async def global_exception_handler(request: Request, exc: Exception):
-        # القاعدة: العميل يستلم trace_id واعتذار — أبداً لا stack trace.
-        # التفاصيل الكاملة تروح للسجل فقط (server-side)، مو للرد.
+    async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+        
         trace_id = getattr(request.state, "trace_id", "unknown")
         log.exception(f"unhandled_exception trace_id={trace_id}")
         return JSONResponse(

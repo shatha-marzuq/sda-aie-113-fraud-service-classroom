@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from typing import cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -21,7 +22,7 @@ def get_scorer(request: Request) -> FraudScorer:
             detail="Model not ready",
             headers={"Retry-After": "5"},
         )
-    return scorer
+    return cast(FraudScorer, scorer)
 
 
 @router.post("/predict", response_model=PredictResponse)
@@ -29,7 +30,7 @@ def predict(
     body: PredictRequest,
     request: Request,
     scorer: FraudScorer = Depends(get_scorer),
-):
+) -> PredictResponse:
     score = scorer.score(body.to_domain())
     return PredictResponse(
         transaction_id=score.transaction_id,
@@ -41,10 +42,8 @@ def predict(
 
 
 @router.get("/health", response_model=HealthResponse)
-def health(request: Request):
-    """الحيوية (liveness): "هل العملية حية؟" — بدون أي I/O إطلاقاً.
-    لو هذا الراوت يفحص النموذج، تحميل بطيء = القرين يقتل الحاوية
-    منتصف التحميل = restart storm (بالضبط المذكور بسلايد 41)."""
+def health(request: Request) -> HealthResponse:
+  
     return HealthResponse(
         status="alive",
         git_sha=getattr(request.app.state, "git_sha", "dev"),
@@ -53,9 +52,8 @@ def health(request: Request):
 
 
 @router.get("/ready", response_model=ReadyResponse)
-def ready(request: Request):
-    """الجاهزية (readiness): "أقدر أخدم صح الحين؟" — يفحص إن النموذج
-    محمّل. يرجع 503 وقت الإحماء؛ موازن الأحمال يوجّه المرور بناءً عليه."""
+def ready(request: Request) -> ReadyResponse:
+   
     scorer = getattr(request.app.state, "scorer", None)
     if scorer is None:
         raise HTTPException(
@@ -64,4 +62,3 @@ def ready(request: Request):
             headers={"Retry-After": "5"},
         )
     return ReadyResponse(status="ready")
-
