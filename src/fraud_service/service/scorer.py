@@ -17,7 +17,7 @@ class FraudScorer:
     def score(self, txn: Transaction) -> FraudScore:
         features = txn.to_features()
         raw = self.model.predict_proba(features)
-        decision = decide(raw, self.block_threshold)
+        decision = decide(raw.value, self.block_threshold)
         return FraudScore(
             transaction_id=txn.transaction_id,
             probability=raw.value,

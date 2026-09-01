@@ -1,8 +1,7 @@
 import pytest
 
-from fraud_service.domain.entities import Decision, RawScore
+from fraud_service.domain.entities import Decision
 from fraud_service.domain.policies import decide
-
 
 @pytest.mark.unit
 @pytest.mark.parametrize("p, expected", [
@@ -14,4 +13,6 @@ from fraud_service.domain.policies import decide
     (1.0,      Decision.BLOCK),
 ])
 def test_decision_bands(p, expected):
-    assert decide(RawScore(value=p), block_threshold=0.85) is expected
+    assert decide(p, block_threshold=00.85) is expected
+
+    

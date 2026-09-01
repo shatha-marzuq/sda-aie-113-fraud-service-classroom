@@ -5,10 +5,9 @@ __pycache__/
 *.pyc
 tests/
 data/
-notebooks/
-.env            # CRITICAL: secrets must never enter the build context
-*.md
-!README.md
-.github/
+payloads/
+notebook_v1.ipynb
 .pytest_cache
 .ruff_cache
+*.md
+!README.md

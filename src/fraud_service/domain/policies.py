@@ -1,12 +1,11 @@
-"""Business policy: thresholds are BUSINESS decisions, not model decisions."""
-from fraud_service.domain.entities import Decision, RawScore
+from fraud_service.domain.entities import Decision
 
-REVIEW_BAND = 0.15  # manual-review band width
+REVIEW_BAND = 0.15
 
 
-def decide(score: RawScore, block_threshold: float) -> Decision:
-    if score.value >= block_threshold:
+def decide(probability: float, block_threshold: float) -> Decision:
+    if probability >= block_threshold:
         return Decision.BLOCK
-    if score.value >= block_threshold - REVIEW_BAND:
+    if probability >= block_threshold - REVIEW_BAND:
         return Decision.REVIEW
     return Decision.ALLOW
