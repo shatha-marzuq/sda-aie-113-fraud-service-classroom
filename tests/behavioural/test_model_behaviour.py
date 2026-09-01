@@ -1,6 +1,5 @@
 import dataclasses
 
-import pandas as pd
 import pytest
 
 from fraud_service.domain.entities import Transaction
