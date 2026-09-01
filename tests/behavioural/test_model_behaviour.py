@@ -3,7 +3,7 @@ import pathlib
 
 import pytest
 
-pytestmark = [pytest.mark.behavioural, pytest.mark.slow]
+pytestmark = pytest.mark.behavioural
 
 
 def _score(model, txn_dict):
@@ -27,6 +27,7 @@ def test_directional_amount(real_model, sample_txn):
 GOLDEN_PATH = pathlib.Path("models/golden_scores_v3.csv")
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(not GOLDEN_PATH.exists(), reason="golden file not generated yet")
 def test_golden_scores(real_model):
     with GOLDEN_PATH.open(newline="") as f:
