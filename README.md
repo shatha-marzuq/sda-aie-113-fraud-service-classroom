@@ -250,6 +250,6 @@ fraud-service/
  
 This project was built as part of **SDA-AIE-113 · Software Engineering Practices for
 AI Systems**, delivered under the **AI Engineer Track** at
-[**SDAIA Academy**](https://github.com/SDAIA-Academy).
+[**SDAIA Academy**].
  
  
