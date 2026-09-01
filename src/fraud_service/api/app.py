@@ -10,7 +10,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-
+import structlog
 from fraud_service.adapters.sklearn_model import SklearnModel
 from fraud_service.api.routes import router
 from fraud_service.api.schemas import ErrorBody, ErrorEnvelope
@@ -52,12 +52,21 @@ async def trace_and_timing_middleware(
 ) -> Response:
     trace_id = str(uuid.uuid4())
     request.state.trace_id = trace_id
+
+    structlog.contextvars.clear_contextvars()
+    structlog.contextvars.bind_contextvars(
+        trace_id=trace_id, path=request.url.path, method=request.method
+    )
+
     t0 = time.perf_counter()
 
     response = await call_next(request)
 
+    latency_ms = round((time.perf_counter() - t0) * 1000, 2)
+    log.info("http_request", status=response.status_code, latency_ms=latency_ms)
+
     response.headers["X-Trace-Id"] = trace_id
-    response.headers["X-Response-Time-Ms"] = str(round((time.perf_counter() - t0) * 1000, 2))
+    response.headers["X-Response-Time-Ms"] = str(latency_ms)
     return response
 
 

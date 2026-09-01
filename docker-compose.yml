@@ -13,6 +13,8 @@ services:
       timeout: 3s
       start_period: 20s
       retries: 3
+    environment:
+    - FRAUD_MODEL_PATH=${FRAUD_MODEL_PATH:-models/fraud_xgb_v3.joblib}
   feature-cache:
     image: redis:7-alpine
     healthcheck:

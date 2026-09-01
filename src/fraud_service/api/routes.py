@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 from typing import cast
-
+from fraud_service.logging_setup import log
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from fraud_service.api.schemas import (
@@ -32,6 +32,15 @@ def predict(
     scorer: FraudScorer = Depends(get_scorer),
 ) -> PredictResponse:
     score = scorer.score(body.to_domain())
+
+    log.info(
+        "prediction_served",
+        decision=score.decision.value,
+        probability_bucket=round(score.probability, 1),
+        model_version=score.model_version,
+    )
+    # ABSENT by design: customer_id, amount, raw features
+
     return PredictResponse(
         transaction_id=score.transaction_id,
         fraud_probability=round(score.probability, 6),
@@ -39,7 +48,6 @@ def predict(
         model_version=score.model_version,
         trace_id=request.state.trace_id,
     )
-
 
 @router.get("/health", response_model=HealthResponse)
 def health(request: Request) -> HealthResponse:

@@ -12,6 +12,7 @@ dependencies = [
     "uvicorn",
     "pydantic-settings",
     "structlog",
+
 ]
 
 [build-system]
