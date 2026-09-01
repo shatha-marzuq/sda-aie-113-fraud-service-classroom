@@ -13,3 +13,4 @@ build/
 dist/
 .env
 .ipynb_checkpoints/
+logs.jsonl

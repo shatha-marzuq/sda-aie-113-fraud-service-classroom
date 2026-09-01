@@ -1,4 +1,0 @@
-{"status": 200, "latency_ms": 12.22, "event": "http_request", "method": "POST", "trace_id": "ae8896d0-4756-4538-af68-1e86a61cfb9a", "path": "/v1/predict", "level": "info", "timestamp": "2026-09-01T11:06:28.383071Z"}
-{"status": 200, "latency_ms": 1.23, "event": "http_request", "method": "GET", "trace_id": "ce761685-c768-4fc3-8f8d-52a418670b07", "path": "/v1/ready", "level": "info", "timestamp": "2026-09-01T11:06:28.882594Z"}
-{"status": 200, "latency_ms": 1.65, "event": "http_request", "method": "GET", "trace_id": "7f693926-f84a-454b-8a2f-ab14cb338db3", "path": "/v1/ready", "level": "info", "timestamp": "2026-09-01T11:06:38.935691Z"}
-{"status": 200, "latency_ms": 0.93, "event": "http_request", "method": "GET", "trace_id": "1c49e2d2-8fd9-4b9b-a95a-91b2daf699b8", "path": "/v1/ready", "level": "info", "timestamp": "2026-09-01T11:06:48.993723Z"}
