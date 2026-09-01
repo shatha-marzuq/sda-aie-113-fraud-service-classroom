@@ -1,3 +1,4 @@
+import dataclasses
 import math
 from dataclasses import dataclass
 from datetime import datetime
@@ -32,6 +33,10 @@ class FeatureVector:
             "is_night": self.is_night,
         }
 
+    @property
+    def values(self) -> dict:
+        return self.to_dict()
+
 
 @dataclass
 class RawScore:
@@ -61,6 +66,9 @@ class Transaction:
             hour_of_day=hour_of_day,
             is_night=is_night,
         )
+
+    def model_dump(self) -> dict:
+        return dataclasses.asdict(self)
 
 
 @dataclass

@@ -1,0 +1,14 @@
+# Build context hygiene: what Docker never needs to see
+.git
+.venv
+__pycache__/
+*.pyc
+tests/
+data/
+notebooks/
+.env            # CRITICAL: secrets must never enter the build context
+*.md
+!README.md
+.github/
+.pytest_cache
+.ruff_cache

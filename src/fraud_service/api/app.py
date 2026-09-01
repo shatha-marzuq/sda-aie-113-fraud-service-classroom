@@ -1,11 +1,12 @@
-
-
+import math
 import time
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from fraud_service.adapters.sklearn_model import SklearnModel
@@ -18,7 +19,7 @@ from fraud_service.service.scorer import FraudScorer
 
 
 def _warmup_features() -> FeatureVector:
-    
+
     return FeatureVector(amount_log=0.0, channel="POS", mcc="0000", hour_of_day=12, is_night=0)
 
 
@@ -40,7 +41,7 @@ async def lifespan(app: FastAPI):
     )
 
     app.state.scorer = FraudScorer(model=model, block_threshold=settings.block_threshold)
-    app.state.started_at = datetime.now(timezone.utc)
+    app.state.started_at = datetime.now(UTC)
     app.state.git_sha = settings.git_sha
     yield
     log.info("shutdown_complete")
@@ -58,10 +59,30 @@ async def trace_and_timing_middleware(request: Request, call_next):
     return response
 
 
+def _json_safe(value):
+    """422 error bodies echo back the raw input value. If that value is a
+    non-finite float (inf/-inf/nan), strict JSON serialization crashes with
+    a 500 instead of returning the 422 the client actually earned."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return str(value)
+    return value
+
+
 def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
     app.middleware("http")(trace_and_timing_middleware)
     app.include_router(router, prefix="/v1")
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        errors = exc.errors()
+        for error in errors:
+            if "input" in error:
+                error["input"] = _json_safe(error["input"])
+        return JSONResponse(
+            status_code=422,
+            content={"detail": jsonable_encoder(errors)},
+        )
 
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
@@ -81,4 +102,6 @@ def create_app() -> FastAPI:
         )
 
     return app
+
+
 app = create_app()

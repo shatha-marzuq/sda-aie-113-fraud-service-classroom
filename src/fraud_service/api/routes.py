@@ -1,17 +1,13 @@
-"""
-src/fraud_service/api/routes.py
-
-تنبيه مهم من السلايد: كل الدوال هنا "def" عادية، مو "async def".
-sklearn inference عملية CPU-bound؛ FastAPI يشغّل "def" داخل thread pool.
-"async def" هنا يوقف الـ event loop كامل — السبب رقم 1 لـ"FastAPI بطيء".
-الفرق مقاس فعليًا بالسلايد: p99 يقفز من 38ms إلى 2.4s لو غلطت هالغلطة.
-"""
-
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from fraud_service.api.schemas import HealthResponse, PredictRequest, PredictResponse, ReadyResponse
+from fraud_service.api.schemas import (
+    HealthResponse,
+    PredictRequest,
+    PredictResponse,
+    ReadyResponse,
+)
 from fraud_service.service.scorer import FraudScorer
 
 router = APIRouter()
@@ -52,7 +48,7 @@ def health(request: Request):
     return HealthResponse(
         status="alive",
         git_sha=getattr(request.app.state, "git_sha", "dev"),
-        started_at=getattr(request.app.state, "started_at", datetime.now(timezone.utc)).isoformat(),
+        started_at=getattr(request.app.state, "started_at", datetime.now(UTC)).isoformat(),
     )
 
 
@@ -68,3 +64,4 @@ def ready(request: Request):
             headers={"Retry-After": "5"},
         )
     return ReadyResponse(status="ready")
+

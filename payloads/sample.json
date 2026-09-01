@@ -1,8 +1,7 @@
 {
-  "transaction_id": "TXN-2026-00042",
-  "amount_sar": 412.5,
-  "channel": "ecom",
-  "merchant_category": "ELECTRONICS",
-  "customer_id": "CUST-0042",
-  "timestamp": "2026-07-05T22:14:00Z"
+  "transaction_id": "TXN-SMOKE-001",
+  "amount_sar": 250,
+  "channel": "pos",
+  "merchant_category": "grocery",
+  "timestamp": "2026-09-01T14:30:00Z"
 }
