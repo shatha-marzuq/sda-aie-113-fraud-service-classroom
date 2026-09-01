@@ -1,8 +1,8 @@
-# Fraud Service 
+# Fraud Service
  
 A production-grade, containerised fraud-scoring API built on FastAPI, scikit-learn, and
 clean architecture principles. This project was developed as the capstone for
-**SDAIA Academy's**.
+**SDAIA Academy's AI Engineer Track**.
  
 **Author:** Shatha Marzuq
  
@@ -75,7 +75,7 @@ Domain                     (Transaction, RawScore, decision policies — pure Py
 - **Docker Desktop** (with Docker Compose v2) — primary environment
 - **Python 3.12+** — only needed for local (non-Docker) development
 - **Git**
-- *(Optional)* [`gitleaks`](https://github.com/gitleaks/gitleaks) for secret scanning
+- *(Optional)* `gitleaks` for secret scanning
 - *(Optional)* `jq` for querying JSON logs from the command line
 No external API keys are required to run this project locally — the ML model artefact
 ships with the repository via Git.
@@ -85,7 +85,7 @@ ships with the repository via Git.
 ## Environment Variables
  
 All configuration is read from environment variables prefixed with `FRAUD_`
-(validated via `pydantic-settings`). See [`configs/settings.example.env`](configs/settings.example.env)
+(validated via `pydantic-settings`). See `configs/settings.example.env`
 for the full documented template — **never commit a real `.env` file.**
  
 | Variable                 | Required | Default                         | Description                                  |
@@ -109,7 +109,7 @@ cp configs/settings.example.env .env
 ### Option A — Docker (recommended)
  
 ```bash
-git clone https://github.com/<your-org>/sda-aie-113-fraud-service-classroom.git
+git clone https://github.com/shatha-marzuq/sda-aie-113-fraud-service-classroom.git
 cd sda-aie-113-fraud-service-classroom
 docker compose up --build -d
 ```
@@ -117,7 +117,7 @@ docker compose up --build -d
 ### Option B — Local Python environment
  
 ```bash
-git clone https://github.com/<your-org>/sda-aie-113-fraud-service-classroom.git
+git clone https://github.com/shatha-marzuq/sda-aie-113-fraud-service-classroom.git
 cd sda-aie-113-fraud-service-classroom
 python -m venv .venv
 .venv\Scripts\Activate.ps1        # Windows PowerShell
@@ -241,15 +241,13 @@ fraud-service/
 - Secrets are never committed, never baked into images, and never logged
   (enforced with `pydantic.SecretStr` and defensive log masking).
 - `gitleaks` is used to scan the repository for accidentally committed secrets.
-- See [`INCIDENT.md`](INCIDENT.md) for the documented secret-leak response procedure.
+- See `INCIDENT.md` for the documented secret-leak response procedure.
 - Logs are structured JSON, correlated by `trace_id`, and deliberately omit
   personally identifiable information (PDPL-aware logging).
 ---
  
 ## Training Program Attribution
  
-This project was built as part of **SDA-AIE-113 · Software Engineering Practices for
-AI Systems**, delivered under the **AI Engineer Track** at
-[**SDAIA Academy**].
- 
+This project was completed under **SDA-AIE-113 · Software Engineering Practices for
+AI Systems**, part of the **AI Engineer Track** at **SDAIA Academy**.
  
